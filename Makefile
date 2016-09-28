@@ -10,4 +10,4 @@ paper.html: paper/paper.md
 	cd paper; pandoc paper.md -s -o paper.html
 
 clean:
-	rm -f paper.html
+	rm -f paper.html paper.md
