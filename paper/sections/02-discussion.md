@@ -113,3 +113,4 @@ As for Pandoc, its usage in this project is very simple. I used the command `pan
 
 Learning the basics of Make was, to me, the most conceptually challenging part of creating this project. Specifically, it was difficult for me to conceptuallize targets and dependencies. The fact that the makefile for this project is very simple alleviated much of my confusion however. It only took me about an hour to grasp Make in the context of this project and feel confident in its usage.  
 
+***
