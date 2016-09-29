@@ -102,7 +102,7 @@ paper.html: paper/paper.md
         cd paper; pandoc paper.md -s -o paper.html
 
 clean:
-        rm -f paper.html paper.md
+        cd paper; rm -f paper.html paper.md
 ```
 
 `paper.md` and `paper.html` are called file targets, and `paper/sections/*.md` and `paper/paper.md` are called dependencies. A file target is the file to be made and a dependency is an already existing file or group of files that will be used to make the target. Below the target and dependencies are bash commands that will create the target file. Notice that I had to use paths to define my dependecies and I had to use `cd` within the commands. This is because the makefile was in the root directory and the dependencies were located in subdirectories. Also, notice that I used the wildcard `*` to select all the .md files in the sections directory rather than name each file individually. 
