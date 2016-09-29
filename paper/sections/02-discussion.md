@@ -32,16 +32,18 @@ Once the directories were all sorted out, I used the command `touch FILE...` to 
 
 In my opinion, nano is useful because it is easy to call up through bash. It works just fine for short bits of text, such as in this project's Makefile (which I will discuss later). However I found it poor for writing long segments of text, so for the essay itself I used other more sightly text editors and simply copied into nano when I wanted to save changes.      
 
-Moving and deleting files also proved useful for this project. The syntax for these are:
+Moving, deleting, and concatenating files also proved useful for this project. The syntax for these are:
 
 ```
 rm [OPTION]... FILE...
 
 mv [options] source dest
-```
-These commands came into play when I made errors such as creating a file in the wrong directory or accidently creating a superfluous file. `mv` was especially useful for moving the image files which I downloaded from the class GutHub repository into my project file structure.
 
-With the above commands I was able to create the file structure for this project. Although it took some relearning of commands I forgot, I was able to complete this step within two hours without requiring help from someone else. Some more bash commands came into use to create the final product, but they are used within other tools I have yet to discuss so we'll save them for later.
+cat FILES... > FILE...
+```
+The first two commands came into play when I made errors such as creating a file in the wrong directory or accidently creating a superfluous file. `mv` was especially useful for moving the image files which I downloaded from the class GutHub repository into my project file structure. `mv` and `cat` came into use in my makefile, but let's save that for later.
+
+With the above commands I was able to create the file structure for this project. Although it took some relearning of commands I forgot, I was able to complete this step within two hours without requiring help from someone else.
 
 ###2. Markdown
 ![](https://raw.githubusercontent.com/acarango/stat159_fall2016_proj1/master/images/markdown-logo.png)
@@ -75,11 +77,32 @@ Let's go through how I used Git and GitHub on this project:
 * When I wanted to make an edit on a file I would do so locally then use the commands `git add FILE...` `git commit -m "message"` and `git push`. 
 * If interested in looking at my history of commits, I used `git log` which is shows us the project history. `git status` was useful for checking if I had made an error attempting to commit and push an edit.
 
-###5. GNU Make
+I encountered difficulty connecting my local and remote repositories for this project, having never used Git before. I made an error connecting the repositories which caused there to be a readme file in the remote repository that was not in the local repository. When attempting my first commit, I was presented with an error. After seeking help from the class GSI, I learned that this simply required me to pull from the remote repository. After this I had no issues using Git.
 
-Once we have a complete project, it is time to 'wrap everything up' so to speak and create a final product. Make, which is a piece of software known as a build automation tool, allows us to generate a polished final product from our source files. Moreover, Make helps us create an easily reproducible workflow. This is accomplished by writing a textfile called 'Makefile'. 
-
-###6. Pandoc
+###5. GNU Make and Pandoc
 ![](https://raw.githubusercontent.com/acarango/stat159_fall2016_proj1/master/images/pandoc-logo.png)
 
-The way we get our final .html file does not only include make. We need a program that can convert our markdown file into a .html, and in other cases a .tex or .docx or .pdf etc. Pandoc allows us to convert between a wide array of formats so we can work in Markdown and have a final product in whatever format suits us.  
+Once I was satisfied with the essay, it was time to 'wrap everything up' so to speak and create a final product.
+I accomplished this by using GNU Make and Pandoc in tandem. GNU Make is a piece of software known as a build automation tool, which automates the process of creating non-source material from source material. Essentially, Make lets us define our own command `make` through a textfile called `Makefile`. The `make` command can do many different things depending on what we put in the makefile, but the goal in this project was to concatenate the sections of the essay together and then convert to html. Pandoc is a program that convert documents between a wide array of formats, so I used Pandoc within my makefile in order to convert from markdown to html.  
+
+Here is what the contents of my makefile look like:
+
+```
+.PHONY: all clean
+
+all: paper.md paper.html
+
+paper.md: paper/sections/*.md
+        cd paper/sections; cat *.md > paper.md
+        cd paper/sections; mv paper.md ../
+
+paper.html: paper/paper.md
+        cd paper; pandoc paper.md -s -o paper.html
+
+clean:
+        rm -f paper.html paper.md
+```
+
+`paper.md` and `paper.html` are called file targets, and `paper/sections/*.md` and `paper/paper.md` are called dependencies. A file target is the file to be made and a dependency is an already existing file or group of files that will be used to make the target. Below the target and dependencies are bash commands that will create the target file. It is important to remember that these commands must be written to be executed starting from the directory in which the makefile resides. This is why I had to change directories within the commands portion. Also, notice that I used the wildcard `*` to denote that the dependencies are all of the .md files in the sections directory. 
+
+In addition to file targets we have the special target `.PHONY` used to define phony targets, which are not associated with files. The  target `all` has the two file targets as prerequisites. When we use the command `make` it will run both programs because Make automatically runs the first target's program, excluding `.PHONY`. If we want to delete the files created by running `make` we can use the command `make clean`.
